@@ -221,8 +221,8 @@ const Marketplace: React.FC = () => {
                                 <AuctionIPCard
                                     key={auction.id}
                                     ip={auction}
-                                    onPlaceBid={() => { }}
-                                    onAcceptBid={() => { }}
+                                    onPlaceBid={async () => { }}
+                                    onAcceptBid={async () => { }}
                                 />
                             ))}
                             {view === 'approvalTokens' && filteredApprovalTokens.map((token) => (

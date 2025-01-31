@@ -7,8 +7,8 @@ interface AuctionIPDetailsModalProps {
     ip: IPItem;
     isOpen: boolean;
     onClose: () => void;
-    onPlaceBid: (ipId: string, amount: number) => Promise<void>;
-    onAcceptBid: (ipId: string) => Promise<void>;
+    onPlaceBid?: (ipId: string, amount: number) => Promise<void>;
+    onAcceptBid?: (ipId: string) => Promise<void>;
 }
 
 const AuctionIPDetailsModal: React.FC<AuctionIPDetailsModalProps> = ({
@@ -60,7 +60,7 @@ const AuctionIPDetailsModal: React.FC<AuctionIPDetailsModalProps> = ({
         setBidError(null);
 
         try {
-            await onPlaceBid(ip.id, amount);
+            await onPlaceBid!(ip.id, amount);
             setBidAmount('');
             // Show success feedback
         } catch (err) {
@@ -69,6 +69,7 @@ const AuctionIPDetailsModal: React.FC<AuctionIPDetailsModalProps> = ({
             setIsProcessingBid(false);
         }
     };
+    // const onPlaceBid = async(id: number, amount: number) =>{}
 
     if (!isOpen) return null;
 
@@ -146,7 +147,7 @@ const AuctionIPDetailsModal: React.FC<AuctionIPDetailsModalProps> = ({
 
                             {isOwner && ip.currentBid && (
                                 <button
-                                    onClick={() => onAcceptBid(ip.id)}
+                                    onClick={() => onAcceptBid!(ip.id)}
                                     className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg mt-4"
                                 >
                                     Accept Current Bid

@@ -4,7 +4,7 @@ import AuctionIPDetailsModal from './AuctionIPDetailsModal';
 
 interface AuctionIPCardProps {
     ip: IPItem;
-    onPlaceBid: (ipId: string, amount: number) => Promise<void>;
+    onPlaceBid: (ipId?: string, amount?: number) => Promise<void>;
     onAcceptBid: (ipId: string) => Promise<void>;
 }
 

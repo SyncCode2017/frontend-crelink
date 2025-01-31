@@ -34,9 +34,12 @@ export interface IPItem {
     createdAt: Date;
     uri: string;
     owner: string;
+    price?: number;
+    ipAddress?: string;
     parentIPs?: ParentIP[];
     currentBid?: number;
     endTime?: Date;
+    expectedBuyerAddress?: string;
 }
 
 export interface IPAction {
