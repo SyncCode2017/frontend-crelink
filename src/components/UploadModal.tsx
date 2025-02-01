@@ -11,7 +11,7 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => {
     const [category, setCategory] = useState<WorkCategory>('MUSIC');
     const [parentIPAddress, setParentIPAddress] = useState('');
     const [parentIPId, setParentIPId] = useState('');
-    const [uri, setUri] = useState('');
+    // const [uri, setUri] = useState('');
     const [isChecking, setIsChecking] = useState(false);
     const [originalityScore, setOriginalityScore] = useState<number | null>(null);
 
@@ -45,7 +45,6 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => {
             category,
             parentIPAddress,
             parentIPId,
-            uri,
             originalityScore
         });
     };
