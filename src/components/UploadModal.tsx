@@ -11,7 +11,6 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => {
     const [category, setCategory] = useState<WorkCategory>('MUSIC');
     const [parentIPAddress, setParentIPAddress] = useState('');
     const [parentIPId, setParentIPId] = useState('');
-    // const [uri, setUri] = useState('');
     const [isChecking, setIsChecking] = useState(false);
     const [originalityScore, setOriginalityScore] = useState<number | null>(null);
 
@@ -91,7 +90,6 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => {
                             <option value="LYRICS">Lyrics</option>
                             <option value="POEM">Poem</option>
                             <option value="BEATS">Beats</option>
-                            <option value="ARTWORK">Artwork</option>
                         </select>
                     </div>
 
