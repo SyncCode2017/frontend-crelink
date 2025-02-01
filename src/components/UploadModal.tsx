@@ -122,20 +122,6 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => {
                         />
                     </div>
 
-                    <div>
-                        <label className="block text-sm font-medium mb-2">
-                            URI
-                        </label>
-                        <input
-                            type="text"
-                            value={uri}
-                            onChange={(e) => setUri(e.target.value)}
-                            className="w-full bg-gray-700 rounded-lg p-2"
-                            placeholder="ipfs://"
-                            required
-                        />
-                    </div>
-
                     {file && !originalityScore && (
                         <button
                             type="button"

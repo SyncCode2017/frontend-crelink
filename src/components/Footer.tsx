@@ -22,10 +22,10 @@ const Footer: React.FC = () => {
                         <ul className="space-y-2">
                             <li>
                                 <button
-                                    onClick={() => navigate('/auctions')}
+                                    onClick={() => navigate('/explore')}
                                     className="hover:text-white"
                                 >
-                                    Live Auctions
+                                    Explore
                                 </button>
                             </li>
                             <li>
@@ -37,9 +37,20 @@ const Footer: React.FC = () => {
                                 </button>
                             </li>
                             <li>
-                                <a href="#" className="hover:text-white">
-                                    Community
-                                </a>
+                                <button
+                                    onClick={() => navigate('/marketplace')}
+                                    className="hover:text-white"
+                                >
+                                    Marketplace
+                                </button>
+                            </li>
+                            <li>
+                                <button
+                                    onClick={() => navigate('/royalties')}
+                                    className="hover:text-white"
+                                >
+                                    Royalties
+                                </button>
                             </li>
                         </ul>
                     </div>
