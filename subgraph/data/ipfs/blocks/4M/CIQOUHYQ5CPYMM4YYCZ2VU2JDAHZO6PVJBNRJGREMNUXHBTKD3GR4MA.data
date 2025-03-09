@@ -1,0 +1,75 @@
+
+º²# type ActiveListing @entity(immutable: false) {
+#   id: ID! # uint256
+#   landId: String! # string
+#   # seller_id: String! # string
+#   buyer_id: String! # string "noBuyer" if no one has bought yet
+#   price: BigInt # uint256
+#   blockTimestamp: BigInt # uint256
+# }
+
+type ActiveAuction @entity(immutable: false) {
+  id: ID! #Bytes!
+  seller: String! # address
+  nftAddress: String! # address
+  tokenId: BigInt! # uint256
+  startingPrice: BigInt! # uint96
+  currentPrice: BigInt! # uint96
+  endAt: BigInt! # uint256
+  highestBidder: String! # address "noBidder" if no one has bidded
+  buyer: String! # string "noBuyer" if no bid has been accepted
+  blockTimestamp: BigInt!
+}
+
+# type LandListingCreated @entity(immutable: false) {
+#   id: ID! #Bytes!
+#   # listingId: BigInt! # uint256
+#   landId: String! # string
+#   price: BigInt! # uint256
+#   blockTimestamp: BigInt! # uint256
+# }
+
+type AuctionCreated @entity(immutable: false) {
+  id: ID! #Bytes!
+  seller: String! # address
+  startingPrice: BigInt! # uint96
+  nftAddress: String! # address
+  tokenId: BigInt! # uint256
+  endAt: BigInt! # uint256
+  blockTimestamp: BigInt!
+}
+
+type AuctionCancelled @entity(immutable: false) {
+  id: ID! #Bytes!
+  blockTimestamp: BigInt!
+}
+
+type AuctionCompleted @entity(immutable: false) {
+  id: ID! #Bytes!
+  seller: String! # address
+  nftAddress: String! # address
+  tokenId: BigInt! # uint256
+  bidder: String! # address
+  currentPrice: BigInt! # uint96
+  blockTimestamp: BigInt!
+}
+
+
+
+# type LandListingCreated @entity(immutable: false) {
+#   id: ID! #Bytes!
+#   # listingId: BigInt! # uint256
+#   landId: String! # string
+#   price: BigInt! # uint256
+#   blockTimestamp: BigInt! # uint256
+# }
+
+type BidCreated @entity(immutable: false) {
+  id: ID! #Bytes!
+  bidder: String! # address
+  currentPrice: BigInt! # uint96
+  blockTimestamp: BigInt!
+}
+
+
+²

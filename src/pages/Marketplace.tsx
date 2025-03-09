@@ -8,6 +8,8 @@ import FractionalizeIPModal from '../components/FractionalizeIPModal';
 import RestoreFractionalizedIPModal from '../components/RestoreFractionalizedIPModal';
 import ListFractionalizedIPModal from '../components/ListFractionalizedIPModal';
 import { IPItem, WorkCategory } from '../types';
+import { client, activeAuctionsQuery } from '../../utils/subgraph-queries'
+import { gql } from '@apollo/client'
 
 const CATEGORIES: WorkCategory[] = ['MUSIC', 'LYRICS', 'POEM', 'BEATS'];
 
@@ -30,6 +32,15 @@ const Marketplace: React.FC = () => {
     const fetchData = async () => {
         setIsLoading(true);
         try {
+            // auctions data
+            client
+                .query({
+                    query: gql(activeAuctionsQuery),
+                })
+                .then((data) => console.log('Subgraph auction data: ', data))
+                .catch((err) => {
+                    console.log('Error fetching auction data: ', err)
+                })
             // Mock data for auctions
             const mockAuctions: IPItem[] = [
                 {

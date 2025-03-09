@@ -50,3 +50,75 @@
 18:05:24.750775 version@stat F·[2] S·2KiB[2KiB] Sc·[0.50]
 18:05:24.756234 db@janitor F·4 G·0
 18:05:24.756366 db@open done T·8.557ms
+23:29:30.826283 db@close closing
+23:29:30.828181 db@close done T·1.8645ms
+=============== Mar 1, 2025 (UTC) ===============
+23:29:41.675289 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+23:29:41.680987 version@stat F·[2] S·2KiB[2KiB] Sc·[0.50]
+23:29:41.681310 db@open opening
+23:29:41.682229 journal@recovery F·1
+23:29:41.699603 journal@recovery recovering @10
+23:29:41.705135 memdb@flush created L0@12 N·90 S·8KiB "/F5..Q5I,v62":"/pr..EHK,v31"
+23:29:41.717895 version@stat F·[3] S·11KiB[11KiB] Sc·[0.75]
+23:29:41.812537 db@janitor F·5 G·0
+23:29:41.814088 db@open done T·132.636125ms
+=============== Mar 2, 2025 (UTC) ===============
+00:24:05.621682 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+00:24:05.630783 version@stat F·[3] S·11KiB[11KiB] Sc·[0.75]
+00:24:05.631229 db@open opening
+00:24:05.634012 journal@recovery F·1
+00:24:05.659984 journal@recovery recovering @13
+00:24:05.743278 memdb@flush created L0@15 N·18 S·1KiB "/F5..Q5I,v113":"/pr..1/b,v128"
+00:24:05.745140 version@stat F·[4] S·12KiB[12KiB] Sc·[1.00]
+00:24:05.769933 db@janitor F·6 G·0
+00:24:05.770586 db@open done T·139.111875ms
+00:24:05.770781 table@compaction L0·4 -> L1·0 S·12KiB Q·130
+00:24:05.781163 table@build created L1@18 N·49 S·6KiB "/F5..Q5I,v113":"/pr..EHK,v59"
+00:24:05.781328 version@stat F·[0 1] S·6KiB[0B 6KiB] Sc·[0.00 0.00]
+00:24:05.785470 table@compaction committed F-3 S-6KiB Ke·0 D·77 T·14.145ms
+00:24:05.786556 table@remove removed @15
+00:24:05.787435 table@remove removed @12
+00:24:05.788648 table@remove removed @5
+00:24:05.789256 table@remove removed @2
+=============== Mar 2, 2025 (UTC) ===============
+00:26:29.980974 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+00:26:30.001760 version@stat F·[0 1] S·6KiB[0B 6KiB] Sc·[0.00 0.00]
+00:26:30.040215 db@open opening
+00:26:30.045649 journal@recovery F·1
+00:26:30.047199 journal@recovery recovering @16
+00:26:30.058334 memdb@flush created L0@19 N·2 S·1KiB "/F5..Q5I,v132":"/ip..EHK,v131"
+00:26:30.060985 version@stat F·[1 1] S·7KiB[1KiB 6KiB] Sc·[0.25 0.00]
+00:26:30.069979 db@janitor F·4 G·0
+00:26:30.070426 db@open done T·26.973583ms
+00:37:21.761466 db@close closing
+00:37:21.763369 db@close done T·1.890959ms
+=============== Mar 2, 2025 (UTC) ===============
+00:37:22.512626 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+00:37:22.521964 version@stat F·[1 1] S·7KiB[1KiB 6KiB] Sc·[0.25 0.00]
+00:37:22.522842 db@open opening
+00:37:22.525275 journal@recovery F·1
+00:37:22.526158 journal@recovery recovering @20
+00:37:22.540349 memdb@flush created L0@22 N·49 S·4KiB "/F5..Q5I,v135":"/pr..EHK,v174"
+00:37:22.541969 version@stat F·[2 1] S·11KiB[5KiB 6KiB] Sc·[0.50 0.00]
+00:37:22.549611 db@janitor F·5 G·0
+00:37:22.561568 db@open done T·38.512083ms
+00:43:25.474397 db@close closing
+00:43:25.476884 db@close done T·2.488459ms
+=============== Mar 2, 2025 (UTC) ===============
+00:43:48.794165 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+00:43:48.799307 version@stat F·[2 1] S·11KiB[5KiB 6KiB] Sc·[0.50 0.00]
+00:43:48.800016 db@open opening
+00:43:48.801374 journal@recovery F·1
+00:43:48.811390 journal@recovery recovering @23
+00:43:48.860252 memdb@flush created L0@25 N·31 S·3KiB "/F5..Q5I,v185":"/pr..EHK,v212"
+00:43:48.880844 version@stat F·[3 1] S·15KiB[8KiB 6KiB] Sc·[0.75 0.00]
+00:43:48.896396 db@janitor F·6 G·0
+00:43:48.897602 db@open done T·97.382541ms
+00:48:37.513072 table@compaction L0·3 -> L1·1 S·15KiB Q·281
+00:48:37.516217 table@build created L1@28 N·49 S·6KiB "/F5..Q5I,v185":"/pr..EHK,v212"
+00:48:37.516372 version@stat F·[0 1] S·6KiB[0B 6KiB] Sc·[0.00 0.00]
+00:48:37.517383 table@compaction committed F-3 S-8KiB Ke·0 D·82 T·3.818417ms
+00:48:37.517989 table@remove removed @25
+00:48:37.518898 table@remove removed @22
+00:48:37.519593 table@remove removed @19
+00:48:37.520369 table@remove removed @18

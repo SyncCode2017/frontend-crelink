@@ -1,0 +1,7 @@
+sources:
+  - name: nft-auction-crelink
+    handler:
+      graphql:
+        endpoint: http://localhost:8000/subgraphs/name/nft-auction-crelink/graphql
+documents:
+  - ./src/allQueries.graphql
