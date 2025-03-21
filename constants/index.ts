@@ -1,0 +1,12 @@
+export { default as nftAuctionAddresses } from "./nftAuctionAddresses.json";
+export { default as nftAuctionAbi } from "./NFTAuction.json";
+export { default as approvalTokensMarketAddresses } from "./approvalTokensMarketAddresses.json";
+export { default as approvalTokenMktAbi } from "./ApprovalTokensMarket.json";
+export { default as derivedIPAddresses } from "./derivedIPAddresses.json";
+export { default as derivativeIPAbi } from "./DerivedIntellectualProperty.json";
+export { default as iPAddresses } from "./iPAddresses.json";
+export { default as intellectualPropertyAbi } from "./IntellectualProperty.json";
+export { default as iPManagerAddresses } from "./iPManagerAddresses.json";
+export { default as iPManagerAbi } from "./IntellectualPropertyManager.json";
+export { default as iPManagerSetterAbi} from "./IPManagerSetter.json";
+export { default as iPMgrSetterAddresses} from "./iPMgrSetterAddresses.json";

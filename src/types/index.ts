@@ -37,7 +37,8 @@ export interface IPItem {
     price?: number;
     ipAddress?: string;
     parentIPs?: ParentIP[];
-    currentBid?: number;
+    currentBid?: string;
+    currentBidder?: string;
     endTime?: Date;
     expectedBuyerAddress?: string;
 }
@@ -46,3 +47,20 @@ export interface IPAction {
     type: 'SELL_APPROVAL' | 'AUCTION' | 'FRACTIONALIZE';
     ipId: string;
 } 
+
+export interface NFTLiveAuction {
+    id: string,
+    seller: string,
+    nftAddress: string,
+    tokenId: string,
+    startingPrice: string,
+    currentPrice: string,
+    endAt: string,
+    highestBidder: string,
+    buyer: string,
+    blockTimestamp: string
+}
+
+export interface contractAddressesInterface {
+    [key: string]: { [key: string]: string[] };
+  }

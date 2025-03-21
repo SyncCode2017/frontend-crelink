@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import { IPItem } from '../types';
-import { formatDate } from '../utils/dateUtils';
+import { blockTimestampToDate, formatDate } from '../utils/dateUtils';
 import WalletService from '../services/wallet';
+// import { Contract, formatEther, parseEther } from 'ethers';
+// import {nftAuctionAbi, nftAuctionAddresses, intellectualPropertyAbi} from '../../constants/'
 
 interface AuctionIPDetailsModalProps {
     ip: IPItem;
     isOpen: boolean;
     onClose: () => void;
-    onPlaceBid?: (ipId: string, amount: number) => Promise<void>;
-    onAcceptBid?: (ipId: string) => Promise<void>;
+    onPlaceBid?: (listingId: string, amount: number) => Promise<void>;
+    onAcceptBid?: (auction: IPItem) => Promise<void>;
+    onCancelAuction?: (listingId: string) => Promise<void>;
 }
 
 const AuctionIPDetailsModal: React.FC<AuctionIPDetailsModalProps> = ({
@@ -16,16 +19,20 @@ const AuctionIPDetailsModal: React.FC<AuctionIPDetailsModalProps> = ({
     isOpen,
     onClose,
     onPlaceBid,
-    onAcceptBid
+    onAcceptBid, 
+    onCancelAuction
 }) => {
+    const connection = WalletService.connection;
     const [message, setMessage] = useState('');
     const [isSending, setIsSending] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [bidAmount, setBidAmount] = useState('');
     const [bidError, setBidError] = useState<string | null>(null);
     const [isProcessingBid, setIsProcessingBid] = useState(false);
+    const currentTimestamp: number = Math.floor(Date.now() / 1000);
+    const currentTime: Date = blockTimestampToDate(currentTimestamp)
 
-    const isOwner = WalletService.connection?.address === ip.owner;
+    const isOwner = connection?.address === ip.owner;
 
     const handleSendMessage = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -48,10 +55,11 @@ const AuctionIPDetailsModal: React.FC<AuctionIPDetailsModalProps> = ({
 
     const handlePlaceBid = async (e: React.FormEvent) => {
         e.preventDefault();
+        console.log("Hi-1");
         if (!bidAmount || isProcessingBid) return;
 
         const amount = parseFloat(bidAmount);
-        if (isNaN(amount) || amount <= (ip.currentBid || 0)) {
+        if (isNaN(amount) || amount <= (Number(ip.currentBid) || 0)) {
             setBidError('Bid must be higher than current bid');
             return;
         }
@@ -69,8 +77,58 @@ const AuctionIPDetailsModal: React.FC<AuctionIPDetailsModalProps> = ({
             setIsProcessingBid(false);
         }
     };
-    // const onPlaceBid = async(id: number, amount: number) =>{}
 
+    const handleCancelAuction = async (e: React.FormEvent) => {
+        e.preventDefault();
+        console.log("Hi-cancel");
+        // if (!bidAmount || isProcessingBid) return;
+
+        // const amount = parseFloat(bidAmount);
+        // if (isNaN(amount) || amount <= (Number(ip.currentBid) || 0)) {
+        //     setBidError('Bid must be higher than current bid');
+        //     return;
+        // }
+
+        setIsProcessingBid(true);
+        setBidError(null);
+
+        try {
+            await onCancelAuction!(ip.id);
+            // setBidAmount('');
+            // Show success feedback
+        } catch (err) {
+            setBidError('Failed to cancel auction. Please try again.');
+        } finally {
+            setIsProcessingBid(false);
+        }
+    };
+
+    const handleAcceptBid = async (e: React.FormEvent) => {
+        e.preventDefault();
+        console.log("Hi-accept-bid");
+        // if (!bidAmount || isProcessingBid) return;
+
+        // const amount = parseFloat(bidAmount);
+        // if (isNaN(amount) || amount <= (Number(ip.currentBid) || 0)) {
+        //     setBidError('Bid must be higher than current bid');
+        //     return;
+        // }
+
+        setIsProcessingBid(true);
+        setBidError(null);
+
+        try {
+            await onAcceptBid!(ip);
+            // setBidAmount('');
+            // Show success feedback
+        } catch (err) {
+            setBidError('Failed to cancel auction. Please try again.');
+        } finally {
+            setIsProcessingBid(false);
+        }
+    };
+    console.log("isOwner", isOwner)
+    console.log("is auction still open?", ip.endTime! >= currentTime)
     if (!isOpen) return null;
 
     return (
@@ -119,7 +177,7 @@ const AuctionIPDetailsModal: React.FC<AuctionIPDetailsModalProps> = ({
                                 )}
                             </div>
 
-                            {!isOwner && WalletService.connection && (
+                            {WalletService.connection && !isOwner && ip.endTime! >= currentTime && (
                                 <form onSubmit={handlePlaceBid} className="space-y-4">
                                     <div>
                                         <input
@@ -127,8 +185,8 @@ const AuctionIPDetailsModal: React.FC<AuctionIPDetailsModalProps> = ({
                                             value={bidAmount}
                                             onChange={(e) => setBidAmount(e.target.value)}
                                             placeholder="Enter bid amount in ETH"
-                                            step="0.01"
-                                            min={ip.currentBid ? ip.currentBid + 0.01 : 0.01}
+                                            step="0.000001"
+                                            min={ip.currentBid ? ip.currentBid + 0.000001 : 0.000001}
                                             className="w-full bg-gray-600 rounded-lg p-3 text-white"
                                         />
                                     </div>
@@ -144,15 +202,48 @@ const AuctionIPDetailsModal: React.FC<AuctionIPDetailsModalProps> = ({
                                     </button>
                                 </form>
                             )}
-
-                            {isOwner && ip.currentBid && (
-                                <button
-                                    onClick={() => onAcceptBid!(ip.id)}
-                                    className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg mt-4"
-                                >
-                                    Accept Current Bid
-                                </button>
+                            {WalletService.connection && !isOwner && ip.endTime! < currentTime && (
+                                <form className="space-y-4">
+            
+                                    <div
+                                        className="w-full pl-40 bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-lg disabled:opacity-50"
+                                    >
+                                        {'Auction is closed!'}
+                                    </div>
+                                </form>
                             )}
+
+                            {WalletService.connection && isOwner && (
+                                <div>
+                                    <div>
+                                        <button
+                                            onClick={handleAcceptBid}
+                                            className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg mt-4"
+                                        >
+                                            Accept Current Bid
+                                        </button>
+                                    </div>
+                                    <div>
+                                        <button
+                                            onClick={handleCancelAuction}
+                                            className="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg mt-4"
+                                        >
+                                            Cancel Auction
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                            {/* {isOwner && ip.currentBidder === 'nobidder' && (
+                                
+                            )}
+                            {!isOwner && ip.endTime! < currentTime && (
+                                <button
+                                    onClick={() => {}}
+                                    className="w-full bg-grey-600 hover:bg-grey-700 text-white py-3 rounded-lg mt-4"
+                                >
+                                    Auction is expired!
+                                </button>
+                            )} */}
                         </div>
 
                         {/* IP Details */}

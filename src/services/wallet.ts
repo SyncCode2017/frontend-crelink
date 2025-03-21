@@ -5,14 +5,18 @@ export type WalletType = 'metamask' | 'phantom';
 interface WalletConnection {
     address: string;
     type: WalletType;
+    provider?: ethers.BrowserProvider;
     chainId?: number;
+    signer?: ethers.JsonRpcSigner;
 }
 
 class WalletService {
     private static instance: WalletService;
     private _connection: WalletConnection | null = null;
 
-    private constructor() { }
+    private constructor() { 
+
+    }
 
     static getInstance(): WalletService {
         if (!WalletService.instance) {
@@ -34,11 +38,14 @@ class WalletService {
             const provider = new ethers.BrowserProvider(window.ethereum);
             const accounts = await provider.send("eth_requestAccounts", []);
             const network = await provider.getNetwork();
+            const signer = await provider.getSigner();
 
             this._connection = {
                 address: accounts[0],
                 type: 'metamask',
-                chainId: Number(network.chainId)
+                provider: provider,
+                chainId: Number(network.chainId),
+                signer: signer
             };
 
             return this._connection;

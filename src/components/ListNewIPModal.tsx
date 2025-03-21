@@ -1,17 +1,18 @@
-import React, { useState } from 'react';
+import React, { Dispatch, SetStateAction, useState } from 'react';
 
 interface ListNewIPModalProps {
     onClose: () => void;
-    onList: (ipAddress: string, ipId: string, startingPrice: number) => void;
+    onList: (ipAddress: string, ipId: string, startingPrice: number | undefined, durationInDays: number | undefined) => void;
 }
 
 const ListNewIPModal: React.FC<ListNewIPModalProps> = ({ onClose, onList }) => {
     const [ipAddress, setIpAddress] = useState('');
     const [ipId, setIpId] = useState('');
-    const [startingPrice, setStartingPrice] = useState(0);
+    const [startingPrice, setStartingPrice] : [number | undefined, Dispatch<SetStateAction<number | undefined>>]= useState();
+    const [durationInDays, setDurationInDays] : [number | undefined, Dispatch<SetStateAction<number | undefined>>]= useState();
 
     const handleSubmit = () => {
-        onList(ipAddress, ipId, startingPrice);
+        onList(ipAddress, ipId, startingPrice, durationInDays);
         onClose();
     };
 
@@ -37,7 +38,14 @@ const ListNewIPModal: React.FC<ListNewIPModalProps> = ({ onClose, onList }) => {
                     type="number"
                     placeholder="Starting Price (ETH)"
                     value={startingPrice}
-                    onChange={(e) => setStartingPrice(Number(e.target.value))}
+                    onChange={(e) => {e.target.value !== undefined ? setStartingPrice(Number(e.target.value)) : e.target.value}}
+                    className="w-full bg-gray-700 rounded-lg p-2 mb-4"
+                />
+                <input
+                    type="number"
+                    placeholder="Auction Duration (Days)"
+                    value={durationInDays}
+                    onChange={(e) => {e.target.value !== undefined ? setDurationInDays(Number(e.target.value)): e.target.value}}
                     className="w-full bg-gray-700 rounded-lg p-2 mb-4"
                 />
                 <button

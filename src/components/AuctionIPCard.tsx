@@ -4,11 +4,12 @@ import AuctionIPDetailsModal from './AuctionIPDetailsModal';
 
 interface AuctionIPCardProps {
     ip: IPItem;
-    onPlaceBid: (ipId?: string, amount?: number) => Promise<void>;
-    onAcceptBid: (ipId: string) => Promise<void>;
+    onPlaceBid: (listingId: string, amount: number) => Promise<void>;
+    onAcceptBid: (auction: IPItem) => Promise<void>;
+    onCancelAuction?: (listingId: string) => Promise<void>;
 }
 
-const AuctionIPCard: React.FC<AuctionIPCardProps> = ({ ip, onPlaceBid, onAcceptBid }) => {
+const AuctionIPCard: React.FC<AuctionIPCardProps> = ({ ip, onPlaceBid, onAcceptBid, onCancelAuction }) => {
     const [showDetailsModal, setShowDetailsModal] = useState(false);
 
     return (
@@ -44,6 +45,7 @@ const AuctionIPCard: React.FC<AuctionIPCardProps> = ({ ip, onPlaceBid, onAcceptB
                 onClose={() => setShowDetailsModal(false)}
                 onPlaceBid={onPlaceBid}
                 onAcceptBid={onAcceptBid}
+                onCancelAuction={onCancelAuction}
             />
         </>
     );
