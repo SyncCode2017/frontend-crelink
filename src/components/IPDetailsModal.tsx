@@ -88,10 +88,10 @@ const IPDetailsModal: React.FC<IPDetailsModalProps> = ({ ip, isOpen, onClose }) 
                                 <div className="space-y-2">
                                     {ip.parentIPs.map((parentIP) => (
                                         <div
-                                            key={parentIP.id}
+                                            key={parentIP.tokenId}
                                             className="bg-gray-700 p-3 rounded-lg"
                                         >
-                                            <p className="text-sm text-gray-300">ID: {parentIP.id}</p>
+                                            <p className="text-sm text-gray-300">ID: {parentIP.tokenId}</p>
                                             <p className="text-sm font-mono text-gray-300 break-all">
                                                 {parentIP.address}
                                             </p>

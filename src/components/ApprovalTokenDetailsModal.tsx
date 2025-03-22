@@ -15,7 +15,7 @@ const ApprovalTokenDetailsModal: React.FC<ApprovalTokenDetailsModalProps> = ({ t
                 <p className="text-white">Owner: {token.owner}</p>
                 <p className="text-white">Price: {token.price} ETH</p>
                 <p className="text-gray-400">IP Address: {token.ipAddress}</p>
-                <p className="text-gray-400">IP ID: {token.id}</p>
+                <p className="text-gray-400">IP ID: {token.tokenId}</p>
                 <p className="text-gray-400">Expected Buyer Address: {token.expectedBuyerAddress}</p>
                 <p className="text-gray-400">Created At: {token.createdAt.toLocaleDateString()}</p>
                 <button

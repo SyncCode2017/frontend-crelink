@@ -14,7 +14,7 @@ const LandingPage: React.FC = () => {
     useEffect(() => {
         setFeaturedWorks([
             {
-                id: 'IP007',
+                tokenId: 'IP007',
                 title: 'Digital Renaissance',
                 category: 'MUSIC',
                 imageUrl: 'https://picsum.photos/400/300?random=5',
@@ -60,7 +60,7 @@ const LandingPage: React.FC = () => {
                         </h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                             {featuredWorks.map((work) => (
-                                <div key={work.id} className="transform hover:scale-105 transition-transform duration-300">
+                                <div key={work.tokenId} className="transform hover:scale-105 transition-transform duration-300">
                                     <PublicIPCard ip={work} />
                                 </div>
                             ))}

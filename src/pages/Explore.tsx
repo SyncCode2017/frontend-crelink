@@ -21,7 +21,7 @@ const ExplorePage: React.FC = () => {
             // Mock data with new fields
             const mockWorks: IPItem[] = [
                 {
-                    id: 'IP003',
+                    tokenId: 'IP003',
                     title: 'Summer Melody',
                     imageUrl: 'https://picsum.photos/400/300?random=1',
                     category: 'MUSIC',
@@ -33,13 +33,13 @@ const ExplorePage: React.FC = () => {
                     uri: 'ipfs://QmZ9YQrX5Z8Z9Z9Z9Z9Z9Z9Z9Z9Z9Z9Z9Z9Z9Z',
                     parentIPs: [
                         {
-                            id: 'IP001',
+                            tokenId: 'IP001',
                             address: 'ipfs://QmParent4Hash'
                         }
                     ]
                 },
                 {
-                    id: 'IP004',
+                    tokenId: 'IP004',
                     title: 'Urban Poetry',
                     owner: '0x123d35Cc6634C0532925a3b844Bc454e4438f789',
                     imageUrl: 'https://picsum.photos/400/300?random=2',
@@ -49,12 +49,12 @@ const ExplorePage: React.FC = () => {
                     createdAt: new Date('2024-02-05'),
                     uri: 'ipfs://QmW8YQrX5Z8Z9Z9Z9Z9Z9Z9Z9Z9Z9Z9Z9Z9Z9Z',
                     parentIPs: [{
-                        id: 'IP001',
+                        tokenId: 'IP001',
                         address: 'ipfs://QmParent1Hash'
                     }]
                 },
                 {
-                    id: 'IP005',
+                    tokenId: 'IP005',
                     title: 'Neon Beats',
                     imageUrl: 'https://picsum.photos/400/300?random=3',
                     category: 'BEATS',
@@ -65,11 +65,11 @@ const ExplorePage: React.FC = () => {
                     uri: 'ipfs://QmV7YQrX5Z8Z9Z9Z9Z9Z9Z9Z9Z9Z9Z9Z9Z9Z9Z',
                     parentIPs: [
                         {
-                            id: 'IP002',
+                            tokenId: 'IP002',
                             address: 'ipfs://QmParent5Hash'
                         },
                         {
-                            id: 'IP003',
+                            tokenId: 'IP003',
                             address: 'ipfs://QmParent6Hash'
                         }
                     ]
@@ -126,7 +126,7 @@ const ExplorePage: React.FC = () => {
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {filteredWorks.map((work) => (
-                                <PublicIPCard key={work.id} ip={work} />
+                                <PublicIPCard key={work.tokenId} ip={work} />
                             ))}
                         </div>
                     )}

@@ -10,7 +10,7 @@ export interface Auction {
 }
 
 export interface Work {
-    id: string;
+    tokenId: string;
     title: string;
     creator: string;
     imageUrl: string;
@@ -19,7 +19,7 @@ export interface Work {
 }
 
 interface ParentIP {
-    id: string;
+    tokenId: string;
     address: string;
 }
 

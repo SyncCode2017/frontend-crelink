@@ -12,7 +12,7 @@ const ApprovalTokenCard: React.FC<ApprovalTokenCardProps> = ({ token, onBuy }) =
             <img src={token.imageUrl} alt={token.title} className="w-full h-48 object-cover rounded-md mb-4" />
             <h3 className="text-lg font-semibold">{token.title}</h3>
             <p className="text-gray-400">IP Address: {token.ipAddress}</p>
-            <p className="text-gray-400">IP ID: {token.id}</p>
+            <p className="text-gray-400">IP ID: {token.tokenId}</p>
             <p className="text-gray-400">Category: {token.category}</p>
             <p className="text-gray-400">Buyer: {token.expectedBuyerAddress}</p>
             <p className="text-white">Price: {token.price} ETH</p>

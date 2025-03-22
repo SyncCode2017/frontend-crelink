@@ -49,7 +49,7 @@ const Dashboard: React.FC = () => {
                     owner: connection.address, // Current user's address
                     parentIPs: [
                         {
-                            id: 'IP000',
+                            tokenId: 'IP000',
                             address: 'ipfs://QmParent1Hash'
                         }
                     ]
@@ -66,11 +66,11 @@ const Dashboard: React.FC = () => {
                     owner: connection.address,
                     parentIPs: [
                         {
-                            id: 'IP001',
+                            tokenId: 'IP001',
                             address: 'ipfs://QmParent2Hash'
                         },
                         {
-                            id: 'IP000',
+                            tokenId: 'IP000',
                             address: 'ipfs://QmParent3Hash'
                         }
                     ]
