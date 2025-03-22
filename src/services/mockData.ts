@@ -29,7 +29,7 @@ export const getMockAuctions = (): Auction[] => [
 
 export const getMockWorks = (): Work[] => [
     {
-        id: '1',
+        tokenId: '1',
         title: 'Abstract Harmony',
         creator: 'Creator One',
         imageUrl: 'https://picsum.photos/400/300?random=4',
@@ -37,7 +37,7 @@ export const getMockWorks = (): Work[] => [
         publishedAt: new Date(),
     },
     {
-        id: '2',
+        tokenId: '2',
         title: 'Urban Pulse',
         creator: 'Creator Two',
         imageUrl: 'https://picsum.photos/400/300?random=5',
@@ -45,7 +45,7 @@ export const getMockWorks = (): Work[] => [
         publishedAt: new Date(),
     },
     {
-        id: '3',
+        tokenId: '3',
         title: 'Cosmic Dreams',
         creator: 'Creator Three',
         imageUrl: 'https://picsum.photos/400/300?random=6',
@@ -53,7 +53,7 @@ export const getMockWorks = (): Work[] => [
         publishedAt: new Date(),
     },
     {
-        id: '4',
+        tokenId: '4',
         title: 'Digital Renaissance',
         creator: 'Creator Four',
         imageUrl: 'https://picsum.photos/400/300?random=7',
