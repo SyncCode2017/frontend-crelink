@@ -24,10 +24,11 @@ interface ParentIP {
 }
 
 export interface IPItem {
-    id: string;
+    listingId?: string;
     title: string;
     category: WorkCategory;
     imageUrl: string;
+    tokenId: string;
     isFractionalized: boolean;
     ownershipPercentage: number;
     approvalTokens?: number;

@@ -10,6 +10,7 @@ const Dashboard: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [myIPs, setMyIPs] = useState<IPItem[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    let chainId: string
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -21,16 +22,22 @@ const Dashboard: React.FC = () => {
         const connection = WalletService.connection;
 
         if (!connection) {
-            // Redirect to home with a return path
-            navigate('/?redirect=dashboard');
+            alert('Please connect your wallet to access the Dashboard.');
+            navigate('/'); // Redirect to Landing page
             return;
         }
-
+        chainId = connection!.chainId ? connection!.chainId.toString() : "31337"
+        console.log("chainId", chainId);
+        if (chainId !== "84532") {
+            alert('Please switch the network in your wallet to Base Sepolia and refresh the page!');
+            navigate('/'); // Redirect to Landing page
+            return;
+        }
         try {
             // Mock data with new fields
             setMyIPs([
                 {
-                    id: 'IP001',
+                    tokenId: 'IP001',
                     title: 'Summer Vibes',
                     category: 'MUSIC',
                     imageUrl: 'https://picsum.photos/400/300?random=1',
@@ -48,7 +55,7 @@ const Dashboard: React.FC = () => {
                     ]
                 },
                 {
-                    id: 'IP002',
+                    tokenId: 'IP002',
                     title: 'Digital Dreams',
                     category: 'BEATS',
                     imageUrl: 'https://picsum.photos/400/300?random=2',
@@ -111,7 +118,7 @@ const Dashboard: React.FC = () => {
                         {myIPs.length > 0 ? (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {myIPs.map((ip) => (
-                                    <IPCard key={ip.id} ip={ip} />
+                                    <IPCard key={ip.tokenId} ip={ip} />
                                 ))}
                             </div>
                         ) : (

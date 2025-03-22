@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Contract, formatEther, id, parseEther } from 'ethers';
+import { Contract, formatEther, parseEther } from 'ethers';
 import {blockTimestampToDate} from '../utils/dateUtils'
 import Navbar from '../components/Navbar';
 import AuctionIPCard from '../components/AuctionIPCard';
@@ -9,10 +9,10 @@ import ListNewIPModal from '../components/ListNewIPModal';
 import FractionalizeIPModal from '../components/FractionalizeIPModal';
 import RestoreFractionalizedIPModal from '../components/RestoreFractionalizedIPModal';
 import ListFractionalizedIPModal from '../components/ListFractionalizedIPModal';
-import { IPItem, WorkCategory, NFTLiveAuction, contractAddressesInterface } from '../types';
+import { IPItem, WorkCategory, contractAddressesInterface } from '../types';
 import { client, activeAuctionsQuery } from '../../utils/subgraph-queries'
 import { gql } from '@apollo/client'
-import {nftAuctionAbi, nftAuctionAddresses, intellectualPropertyAbi} from '../../constants/'
+import {nftAuctionAbi, nftAuctionAddresses, intellectualPropertyAbi, nftFractionalizerAbi, nftFractionalizerAddresses, erc20NFTFractionsAbi, erc20AuctionAbi, erc20AuctionAddresses} from '../../constants/'
 import WalletService from '../services/wallet';
 import { useNavigate } from 'react-router-dom';
 
@@ -31,28 +31,51 @@ const Marketplace: React.FC = () => {
     const [isFractionalizeIPModalOpen, setIsFractionalizeIPModalOpen] = useState(false); // State for fractionalizing modal
     const [isRestoreFractionalizedIPModalOpen, setIsRestoreFractionalizedIPModalOpen] = useState(false); // State for restoring modal
     const [isListFractionalizedIPModalOpen, setIsListFractionalizedIPModalOpen] = useState(false); // State for listing fractionalized modal
+    let mockAuctions: IPItem[] = []
+    let nftAuctionAddressesIntf: contractAddressesInterface,
+        nftFractionalizerAddressesIntf: contractAddressesInterface, erc20AuctionAddressesIntf: contractAddressesInterface, chainId, nftAuctionAddress,
+        nftFractionalizerAddress: string | null, erc20AuctionAddress, nftAuctionContract: Contract, nftFractionalizerContract: Contract, erc20AuctionContract: Contract
 
+    const connection = WalletService.connection;
     
     useEffect(() => {
-        fetchData();
+        checkWalletConnection();
     }, []);
-    let mockAuctions: IPItem[] = []
-    const connection = WalletService.connection;
-    const addresses: contractAddressesInterface = nftAuctionAddresses;
-    const chainId = connection!.chainId ? connection!.chainId.toString() : "31337"
-    // console.log("nftAuctionAddresses[connection.chainId!]", addresses[chainId]["NFTAuction"][0])
 
-    console.log("chainId", chainId);
-    const nftAuctionAddress =
-      chainId in addresses ? addresses[chainId]["NFTAuction"][0] : null;
-    const nftAuctionContract = new Contract(nftAuctionAddress!, nftAuctionAbi, connection!.signer);
+    const checkWalletConnection = async () => {
+        // const connection = WalletService.connection;
+        if (!connection) {
+            alert('Please connect your wallet to access the Marketplace.');
+            navigate('/'); // Redirect to Landing page
+            return;
+        }
+        chainId = connection!.chainId ? connection!.chainId.toString() : "31337"
+        console.log("chainId", chainId);
+        if (chainId !== "84532") {
+            alert('Please switch the network in your wallet to Base Sepolia and refresh the page!');
+            navigate('/'); // Redirect to Landing page
+            return;
+        }
+        // ----------------- Fetching Contracts ---------------------------------------------------------------------------
+        nftAuctionAddressesIntf = nftAuctionAddresses;
+        nftFractionalizerAddressesIntf = nftFractionalizerAddresses;
+        erc20AuctionAddressesIntf = erc20AuctionAddresses;
+        // console.log("nftAuctionAddresses[connection.chainId!]", nftAuctionAddressesIntf[chainId]["NFTAuction"][0])
 
-    if (!connection /**|| connection?.chainId != 84532*/) {
-        console.log("Please switch your network to Base Sepolia!")
-        // Redirect to home with a return path
-        navigate('/?redirect=marketplace');
-        return;
-    }
+        nftAuctionAddress =
+        chainId in nftAuctionAddressesIntf ? nftAuctionAddressesIntf[chainId]["NFTAuction"][0] : null;
+        nftFractionalizerAddress =
+        chainId in nftFractionalizerAddressesIntf ? nftFractionalizerAddressesIntf[chainId]["NFTFractionalizer"][0] : null;
+        erc20AuctionAddress =
+        chainId in erc20AuctionAddressesIntf ? erc20AuctionAddressesIntf[chainId]["ERC20Auction"][0] : null;
+        nftAuctionContract = new Contract(nftAuctionAddress!, nftAuctionAbi, connection!.signer);
+        nftFractionalizerContract = new Contract(nftFractionalizerAddress!, nftFractionalizerAbi, connection!.signer);
+        erc20AuctionContract = new Contract(erc20AuctionAddress!, erc20AuctionAbi, connection!.signer);
+
+        // --------------------------------------------------------------------------------------------------------------------
+        fetchData();
+    };
+
 
     const fetchData = async () => {
         setIsLoading(true);
@@ -68,9 +91,9 @@ const Marketplace: React.FC = () => {
                     // console.log('intellectualPropertyAbi:',intellectualPropertyAbi)
                     for (let auctionIPData of listingData.data.activeAuctions){
                         console.log("auctionIPData",auctionIPData)
-                        console.log('signer:', await connection.signer?.getAddress())
+                        console.log('signer:', await connection!.signer?.getAddress())
                        
-                        const nftIPContract = new Contract(auctionIPData.nftAddress, intellectualPropertyAbi, connection.signer);
+                        const nftIPContract = new Contract(auctionIPData.nftAddress, intellectualPropertyAbi, connection!.signer);
                         let categorySymbol = (await nftIPContract.symbol()).toString()
                         categorySymbol.toLowerCase() === 'poems' ? categorySymbol = 'poem' : categorySymbol
                         const ipUri = await nftIPContract.tokenURI(auctionIPData.tokenId)
@@ -80,8 +103,9 @@ const Marketplace: React.FC = () => {
                         // console.log('categorySymbol:', categorySymbol.toUpperCase())
                         // TODO: include tittle in the intellectual property
                         mockAuctions.push({
-                            id: auctionIPData.tokenId,
-                            title: `IP for ${categorySymbol} with id ${auctionIPData.tokenId}`,
+                            listingId: auctionIPData.id,
+                            tokenId: auctionIPData.tokenId,
+                            title: `IP for ${categorySymbol} with tokenId ${auctionIPData.tokenId}`,
                             category: categorySymbol.toUpperCase(),
                             imageUrl: 'https://picsum.photos/400/300?random=4',
                             isFractionalized: false,
@@ -97,60 +121,16 @@ const Marketplace: React.FC = () => {
                         })
 
                     }
-                    // const quotes = await Promise.all(calls); // returns [[], [], []]
-                    // mockAuctionData = listingData.data.activeAuctions.map((x) => (
-                        // const signer = connection.signer
-                        
-                        // {
-                        //     address: availableDexes[i].address,
-                        //     amountIn: quote[0],
-                        //     amountOut: amountOutWEI,
-                        //     tokenIn,
-                        //     tokenOut,
-                        //     tokenInSymbol,
-                        //     tokenOutSymbol
-                        // }
-                    // ));
+                    setAuctions(mockAuctions)
                     })
                 .catch((err) => {
                     console.log('Error fetching auction data: ', err)
-                })
-            // Mock data for auctions
-            // const mockAuctions: IPItem[] = [
-            //     {
-            //         id: 'IP006',
-            //         title: 'Cosmic Harmony',
-            //         category: 'MUSIC',
-            //         imageUrl: 'https://picsum.photos/400/300?random=4',
-            //         isFractionalized: true,
-            //         ownershipPercentage: 50,
-            //         createdAt: new Date('2024-02-15'),
-            //         uri: 'ipfs://QmAuctionHash1',
-            //         owner: '0x742d35Cc6634C0532925a3b844Bc454e4438f44e',
-            //         parentIPs: [],
-            //         currentBid: 2.5,
-            //         endTime: new Date(Date.now() + 86400000)
-            //     },
-            //     {
-            //         id: 'IP007',
-            //         title: 'Digital Dreams V2',
-            //         category: 'BEATS',
-            //         imageUrl: 'https://picsum.photos/400/300?random=5',
-            //         isFractionalized: false,
-            //         ownershipPercentage: 100,
-            //         createdAt: new Date('2024-02-18'),
-            //         uri: 'ipfs://QmAuctionHash2',
-            //         owner: '0xEcE425Bc97E85A208949B9449252C40C9AA356C1',
-            //         currentBid: 1.8,
-            //         endTime: new Date(Date.now() + 172800000)
-            //     }
-            // ];
-            setAuctions(mockAuctions);
+                });
 
             // Mock data for approval tokens
             const mockApprovalTokens: IPItem[] = [
                 {
-                    id: 'IP008',
+                    tokenId: 'IP008',
                     title: 'Usage Approval',
                     category: 'MUSIC',
                     imageUrl: 'https://picsum.photos/400/300?random=6',
@@ -164,7 +144,7 @@ const Marketplace: React.FC = () => {
                     expectedBuyerAddress: '0xABC1234567890DEF',
                 },
                 {
-                    id: 'IP009',
+                    tokenId: 'IP009',
                     title: 'Usage Approval',
                     category: 'MUSIC',
                     imageUrl: 'https://picsum.photos/400/300?random=7',
@@ -199,13 +179,27 @@ const Marketplace: React.FC = () => {
         console.log("send cancel tx on chain ...");
         const tx = await nftAuctionContract.bid(Number(id), {value: parseEther(amount.toString())});
         await tx.wait();
+        alert('Transaction successful!');
     }
-    const handleOnCancelAuction = async(id: string) =>{
+    const handleOnCancelAuction = async(auction: IPItem) =>{
         console.log("send cancel tx on chain ...");
-
-            const tx = await nftAuctionContract.completeAuctionAndAcceptBid(Number(id!));
+        const currentTimestamp: number = Math.floor(Date.now() / 1000);
+        const currentTime: Date = blockTimestampToDate(currentTimestamp)
+        if (auction.endTime! > currentTime) {
+            console.log("Cancel early ..");
+            const tx = await nftAuctionContract.cancelAuctionEarlyAndRejectBid(Number(auction.listingId));
+         await tx.wait();
+         alert('Transaction successful!');
+        } else {
+            console.log("Cancel after expiration ..");
+            const tx = await nftAuctionContract.completeAuctionAndAcceptBid(Number(auction.listingId!));
             await tx.wait();
-            console.log("Cancel tx successful!");
+            alert('Transaction successful!');
+        }
+        console.log("Cancel tx successful!");
+        // Show success feedback
+        alert('Transaction successful!');
+
 
     }
     const handleOnAcceptBid = async(auction: IPItem) =>{
@@ -214,12 +208,14 @@ const Marketplace: React.FC = () => {
         const currentTime: Date = blockTimestampToDate(currentTimestamp)
 
         if (auction.endTime! > currentTime) {
-            const tx = await nftAuctionContract.endAuctionEarlyAndAcceptBid(Number(auction.id!));
-            await tx.wait();
+            const tx = await nftAuctionContract.endAuctionEarlyAndAcceptBid(Number(auction.listingId!));
+             await tx.wait();
         } else {
-            const tx = await nftAuctionContract.completeAuctionAndAcceptBid(Number(auction.id!));
+            const tx = await nftAuctionContract.completeAuctionAndAcceptBid(Number(auction.listingId!));
             await tx.wait();
+            
         }
+        alert('Transaction successful!');
         console.log("Cancel tx successful!");
     }
     const handleBuyApprovalToken = (token: IPItem) => {
@@ -236,11 +232,13 @@ const Marketplace: React.FC = () => {
             const listingFee = (await nftAuctionContract.listingFee()).toString()
             console.log("listingFee", listingFee)
             const tx = await nftAuctionContract.listNFTForAuction(startingPriceWei, ipAddress, Number(ipId), durationInSec, {value: BigInt(listingFee)});
-            await tx.wait();
-            console.log("New IP listed for auction!")
-            // Show success feedback
+             await tx.wait();
+                console.log("New IP listed for auction!")
+                // Show success feedback
         } catch (err) {
             console.log("listing error", err)
+            // Show failure feedback
+            alert('Transaction failed, please try again!');
         } finally {
             setIsListNewIPModalOpen(false); // Close the modal after listing
         }
@@ -248,19 +246,82 @@ const Marketplace: React.FC = () => {
         
     };
 
-    const handleFractionalizeIP = (ipAddress: string, ipId: string) => {
+    const handleFractionalizeIP = async (ipAddress: string, ipId: string) => {
         console.log(`Fractionalizing IP/NFT: ${ipAddress}, ID: ${ipId}`);
-        setIsFractionalizeIPModalOpen(false); // Close the modal after fractionalizing
+        const nftIPContract = new Contract(ipAddress, intellectualPropertyAbi, connection!.signer);
+        try {  
+            // approve 
+            const approveTx = await nftIPContract.approve(nftFractionalizerAddress, Number(ipId))
+            await approveTx.wait()
+            // fractionalize
+            const fractionalizeTx = await nftFractionalizerContract.fractionalize(ipAddress, Number(ipId))
+            await fractionalizeTx.wait()
+            const erc20FractionAddress = await nftFractionalizerContract.getErc20FractionsAddressOf(ipAddress, Number(ipId))
+            const erc20NftContract = new Contract(erc20FractionAddress, erc20NFTFractionsAbi, connection!.signer);
+            const totalSupply = await erc20NftContract.balanceOf(connection!.address)
+            console.log(`Fractionalized IP to ${totalSupply} ERC20 tokens `)
+            // Show success feedback
+            alert('Transaction successful!');
+        } catch (err) {
+            console.log("fractionalization error", err)
+            // Show failure feedback
+            alert('Transaction failed, please try again!');
+        } finally {
+            setIsFractionalizeIPModalOpen(false); // Close the modal after fractionalizing
+        }
+      
     };
 
-    const handleRestoreFractionalizedIP = (ipAddress: string, ipId: string) => {
-        console.log(`Restoring fractionalized IP/NFT: ${ipAddress}, ID: ${ipId}`);
-        setIsRestoreFractionalizedIPModalOpen(false); // Close the modal after restoring
+    const handleRestoreFractionalizedIP = async (erc20NftAddress: string, ipId: string) => {
+        console.log(`Restoring fractionalized using ERC20 fraction: ${erc20NftAddress}, ID: ${ipId}`);
+        // const erc20FractionAddress = await nftFractionalizerContract.getErc20FractionsAddressOf(erc20NftAddress, Number(ipId))
+        const erc20NftContract = new Contract(erc20NftAddress, erc20NFTFractionsAbi, connection!.signer);
+        const totalSupply = await erc20NftContract.totalSupply()
+        console.log(` ERC20: ${erc20NftAddress}, totalSupply: ${totalSupply}`);
+        try {  
+            // restore the NFT
+            const approveTx = await erc20NftContract.approve(nftFractionalizerAddress!, parseEther(totalSupply.toString()))
+            await approveTx.wait()
+            const restoreTx = await nftFractionalizerContract.restoreNFTWithERC20Address(erc20NftAddress, Number(ipId))
+            await restoreTx.wait()
+            console.log(`ERC721 NFT with tokenId ${ipId} has been restored`)
+            // Show success feedback
+            alert('Transaction successful!');
+        } catch (err) {
+            console.log("transaction error", err)
+            // Show failure feedback
+            alert('Transaction failed, please try again!');
+        } finally {
+            setIsRestoreFractionalizedIPModalOpen(false); // Close the modal after restoring
+        }
+       
     };
 
-    const handleListFractionalizedIP = (ipAddress: string, ipId: string, startingPrice: number, fractionAmount: number) => {
-        console.log(`Listing fractionalized IP/NFT: ${ipAddress}, ID: ${ipId}, Starting Price: ${startingPrice} ETH, Fraction Amount: ${fractionAmount}`);
-        setIsListFractionalizedIPModalOpen(false); // Close the modal after listing
+    const handleListErc20IP = async(erc20NftAddress: string, ipId: string, startingPrice: number | undefined, erc20AmountEth: number | undefined, durationInDays: number | undefined) => {
+        console.log(`Listing NFT fractionalized ERC20 fraction: ${erc20NftAddress}, ID: ${ipId}, Starting Price: ${startingPrice} ETH, Fraction Amount: ${erc20AmountEth}`);
+        startingPrice ? startingPrice : startingPrice = 0
+        erc20AmountEth ? erc20AmountEth : erc20AmountEth = 0
+        durationInDays ? durationInDays : durationInDays = 0
+        const startingPriceWei = parseEther(startingPrice.toString())
+        const erc20AmountWei = parseEther(erc20AmountEth.toString())
+        const durationInSec = 24 * 60 * 60 * durationInDays
+        const erc20NftContract = new Contract(erc20NftAddress, erc20NFTFractionsAbi, connection!.signer);
+        try {  
+            // restore the NFT
+            const approveTx = await erc20NftContract.approve(nftFractionalizerAddress, erc20AmountWei)
+            await approveTx.wait()
+            const listErc20Tx = await erc20AuctionContract.listERC20ForAuction(startingPriceWei, erc20NftAddress, erc20AmountWei, durationInSec)
+            await listErc20Tx.wait()      
+            console.log(`ERC20 fraction of tokenId ${ipId} has been listed`)
+            // Show success feedback
+            alert('Transaction successful!');
+        } catch (err) {
+            console.log("ERC20 auction listing error", err)
+            // Show failure feedback
+            alert('Transaction failed, please try again!');
+        } finally {
+            setIsListFractionalizedIPModalOpen(false); // Close the modal after listing
+        }
     };
 
     return (
@@ -347,16 +408,16 @@ const Marketplace: React.FC = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {view === 'auctions' && filteredAuctions.map((auction) => (
                                 <AuctionIPCard
-                                    key={auction.id}
+                                    key={auction.listingId}
                                     ip={auction}
                                     onPlaceBid={handleOnPlaceBid}
                                     onAcceptBid={handleOnAcceptBid}
-                                    onCancelAuction={() => handleOnCancelAuction(auction.id)}
+                                    onCancelAuction={() => handleOnCancelAuction(auction)}
                                 />
                             ))}
                             {view === 'approvalTokens' && filteredApprovalTokens.map((token) => (
                                 <ApprovalTokenCard
-                                    key={token.id}
+                                    key={token.listingId}
                                     token={token}
                                     onBuy={() => handleBuyApprovalToken(token)}
                                 />
@@ -401,7 +462,7 @@ const Marketplace: React.FC = () => {
                     {isListFractionalizedIPModalOpen && (
                         <ListFractionalizedIPModal
                             onClose={() => setIsListFractionalizedIPModalOpen(false)}
-                            onList={handleListFractionalizedIP}
+                            onList={handleListErc20IP}
                         />
                     )}
                 </div>

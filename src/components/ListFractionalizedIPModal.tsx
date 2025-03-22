@@ -1,30 +1,31 @@
-import React, { useState } from 'react';
+import React, { Dispatch, SetStateAction, useState } from 'react';
 
 interface ListFractionalizedIPModalProps {
     onClose: () => void;
-    onList: (ipAddress: string, ipId: string, startingPrice: number, fractionAmount: number) => void;
+    onList: (erc20NftAddress: string, ipId: string, startingPrice: number | undefined, erc20Amount: number | undefined, durationInDays: number | undefined) => void;
 }
 
 const ListFractionalizedIPModal: React.FC<ListFractionalizedIPModalProps> = ({ onClose, onList }) => {
-    const [ipAddress, setIpAddress] = useState('');
+    const [erc20NftAddress, setErc20NftAddress] = useState('');
     const [ipId, setIpId] = useState('');
-    const [startingPrice, setStartingPrice] = useState(0);
-    const [fractionAmount, setFractionAmount] = useState(0);
+    const [startingPrice, setStartingPrice]: [number | undefined, Dispatch<SetStateAction<number | undefined>>]= useState();
+    const [erc20Amount, setErc20Amount]: [number | undefined, Dispatch<SetStateAction<number | undefined>>]= useState();
+    const [durationInDays, setDurationInDays]: [number | undefined, Dispatch<SetStateAction<number | undefined>>]= useState();
 
     const handleSubmit = () => {
-        onList(ipAddress, ipId, startingPrice, fractionAmount);
+        onList(erc20NftAddress, ipId, startingPrice, erc20Amount, durationInDays);
         onClose();
     };
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-gray-800 rounded-lg p-6 w-11/12 md:w-1/3">
-                <h2 className="text-2xl font-bold mb-4">List Fractionalized IP/NFT for Auction</h2>
+                <h2 className="text-2xl font-bold mb-4">List ERC20 Fractionalized IP/NFT for Auction</h2>
                 <input
                     type="text"
-                    placeholder="IP/NFT Address"
-                    value={ipAddress}
-                    onChange={(e) => setIpAddress(e.target.value)}
+                    placeholder="ERC20 Address"
+                    value={erc20NftAddress}
+                    onChange={(e) => setErc20NftAddress(e.target.value)}
                     className="w-full bg-gray-700 rounded-lg p-2 mb-4"
                 />
                 <input
@@ -43,9 +44,16 @@ const ListFractionalizedIPModal: React.FC<ListFractionalizedIPModalProps> = ({ o
                 />
                 <input
                     type="number"
-                    placeholder="Fractional Amount"
-                    value={fractionAmount}
-                    onChange={(e) => setFractionAmount(Number(e.target.value))}
+                    placeholder="Amount to Sell (ETH)"
+                    value={erc20Amount}
+                    onChange={(e) => setErc20Amount(Number(e.target.value))}
+                    className="w-full bg-gray-700 rounded-lg p-2 mb-4"
+                />
+                <input
+                    type="number"
+                    placeholder="Auction Duration (Days)"
+                    value={durationInDays}
+                    onChange={(e) => setDurationInDays(Number(e.target.value))}
                     className="w-full bg-gray-700 rounded-lg p-2 mb-4"
                 />
                 <button

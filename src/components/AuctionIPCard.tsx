@@ -6,7 +6,7 @@ interface AuctionIPCardProps {
     ip: IPItem;
     onPlaceBid: (listingId: string, amount: number) => Promise<void>;
     onAcceptBid: (auction: IPItem) => Promise<void>;
-    onCancelAuction?: (listingId: string) => Promise<void>;
+    onCancelAuction?: (auction: IPItem) => Promise<void>;
 }
 
 const AuctionIPCard: React.FC<AuctionIPCardProps> = ({ ip, onPlaceBid, onAcceptBid, onCancelAuction }) => {

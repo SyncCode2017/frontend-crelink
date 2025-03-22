@@ -2,15 +2,15 @@ import React, { useState } from 'react';
 
 interface RestoreFractionalizedIPModalProps {
     onClose: () => void;
-    onRestore: (ipAddress: string, ipId: string) => void;
+    onRestore: (erc20NftAddress: string, ipId: string) => void;
 }
 
 const RestoreFractionalizedIPModal: React.FC<RestoreFractionalizedIPModalProps> = ({ onClose, onRestore }) => {
-    const [ipAddress, setIpAddress] = useState('');
+    const [erc20NftAddress, setErc20NftAddress] = useState('');
     const [ipId, setIpId] = useState('');
 
     const handleSubmit = () => {
-        onRestore(ipAddress, ipId);
+        onRestore(erc20NftAddress, ipId);
         onClose();
     };
 
@@ -20,9 +20,9 @@ const RestoreFractionalizedIPModal: React.FC<RestoreFractionalizedIPModalProps> 
                 <h2 className="text-2xl font-bold mb-4">Restore Fractionalized IP/NFT</h2>
                 <input
                     type="text"
-                    placeholder="IP/NFT Address"
-                    value={ipAddress}
-                    onChange={(e) => setIpAddress(e.target.value)}
+                    placeholder=" ERC20 NFT Fraction Address"
+                    value={erc20NftAddress}
+                    onChange={(e) => setErc20NftAddress(e.target.value)}
                     className="w-full bg-gray-700 rounded-lg p-2 mb-4"
                 />
                 <input

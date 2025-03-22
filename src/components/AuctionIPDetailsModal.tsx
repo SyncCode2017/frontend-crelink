@@ -11,7 +11,7 @@ interface AuctionIPDetailsModalProps {
     onClose: () => void;
     onPlaceBid?: (listingId: string, amount: number) => Promise<void>;
     onAcceptBid?: (auction: IPItem) => Promise<void>;
-    onCancelAuction?: (listingId: string) => Promise<void>;
+    onCancelAuction?: (auction: IPItem) => Promise<void>;
 }
 
 const AuctionIPDetailsModal: React.FC<AuctionIPDetailsModalProps> = ({
@@ -68,7 +68,7 @@ const AuctionIPDetailsModal: React.FC<AuctionIPDetailsModalProps> = ({
         setBidError(null);
 
         try {
-            await onPlaceBid!(ip.id, amount);
+            await onPlaceBid!(ip.listingId!, amount);
             setBidAmount('');
             // Show success feedback
         } catch (err) {
@@ -93,7 +93,7 @@ const AuctionIPDetailsModal: React.FC<AuctionIPDetailsModalProps> = ({
         setBidError(null);
 
         try {
-            await onCancelAuction!(ip.id);
+            await onCancelAuction!(ip);
             // setBidAmount('');
             // Show success feedback
         } catch (err) {

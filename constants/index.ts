@@ -9,4 +9,14 @@ export { default as intellectualPropertyAbi } from "./IntellectualProperty.json"
 export { default as iPManagerAddresses } from "./iPManagerAddresses.json";
 export { default as iPManagerAbi } from "./IntellectualPropertyManager.json";
 export { default as iPManagerSetterAbi} from "./IPManagerSetter.json";
-export { default as iPMgrSetterAddresses} from "./iPMgrSetterAddresses.json";
+export { default as iPMgrSetterAddresses } from "./iPMgrSetterAddresses.json";
+export { default as nftFractionalizerAddresses } from "./nftFractionalizerAddresses.json";
+export { default as nftFractionalizerAbi } from "./NFTFractionalizer.json";
+export { default as usageApprovalAbi } from "./UsageApproval.json";
+export { default as usageApprovalAddresses } from "./usageApprovalAddresses.json";
+export { default as newCategorySetterAbi } from "./NewCategorySetter.json";
+export { default as newCategorySetterAddresses } from "./newCategorySetterAddresses.json";
+export { default as erc20AuctionAbi } from "./ERC20Auction.json";
+export { default as erc20AuctionAddresses } from "./erc20AuctionAddresses.json";
+export { default as erc20NFTFractionsAbi } from "./ERC20NFTFractions.json";
+export { default as erc20NFTFractionsAddresses } from "./erc20NFTFractionsAddresses.json";
