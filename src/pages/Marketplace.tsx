@@ -32,18 +32,37 @@ const Marketplace: React.FC = () => {
     const [isRestoreFractionalizedIPModalOpen, setIsRestoreFractionalizedIPModalOpen] = useState(false); // State for restoring modal
     const [isListFractionalizedIPModalOpen, setIsListFractionalizedIPModalOpen] = useState(false); // State for listing fractionalized modal
     let mockAuctions: IPItem[] = []
+    let connection //= WalletService.connection;
     let nftAuctionAddressesIntf: contractAddressesInterface,
         nftFractionalizerAddressesIntf: contractAddressesInterface, erc20AuctionAddressesIntf: contractAddressesInterface, chainId, nftAuctionAddress,
         nftFractionalizerAddress: string | null, erc20AuctionAddress, nftAuctionContract: Contract, nftFractionalizerContract: Contract, erc20AuctionContract: Contract
 
-    const connection = WalletService.connection;
+
+    connection = WalletService.connection;
+    chainId = connection!.chainId ? connection!.chainId.toString() : "31337"
+    nftAuctionAddressesIntf = nftAuctionAddresses;
+    nftFractionalizerAddressesIntf = nftFractionalizerAddresses;
+    erc20AuctionAddressesIntf = erc20AuctionAddresses;
+    // console.log("nftAuctionAddresses[connection.chainId!]", nftAuctionAddressesIntf[chainId]["NFTAuction"][0])
+
+    nftAuctionAddress = chainId in nftAuctionAddressesIntf ? nftAuctionAddressesIntf[chainId]["NFTAuction"][0] : null;
+    nftFractionalizerAddress = chainId in nftFractionalizerAddressesIntf ? nftFractionalizerAddressesIntf[chainId]["NFTFractionalizer"][0] : null;
+    erc20AuctionAddress = chainId in erc20AuctionAddressesIntf ? erc20AuctionAddressesIntf[chainId]["ERC20Auction"][0] : null;
+
+            // ----------------- Fetching Contracts ---------------------------------------------------------------------------
+
+            nftAuctionContract = new Contract(nftAuctionAddress!, nftAuctionAbi, connection!.signer);
+            nftFractionalizerContract = new Contract(nftFractionalizerAddress!, nftFractionalizerAbi, connection!.signer);
+            erc20AuctionContract = new Contract(erc20AuctionAddress!, erc20AuctionAbi, connection!.signer);
+    
+            // --------------------------------------------------------------------------------------------------------------------
     
     useEffect(() => {
         checkWalletConnection();
-    }, []);
+    }, [connection]);
 
     const checkWalletConnection = async () => {
-        // const connection = WalletService.connection;
+        connection = WalletService.connection;
         if (!connection) {
             alert('Please connect your wallet to access the Marketplace.');
             navigate('/'); // Redirect to Landing page
@@ -56,23 +75,7 @@ const Marketplace: React.FC = () => {
             navigate('/'); // Redirect to Landing page
             return;
         }
-        // ----------------- Fetching Contracts ---------------------------------------------------------------------------
-        nftAuctionAddressesIntf = nftAuctionAddresses;
-        nftFractionalizerAddressesIntf = nftFractionalizerAddresses;
-        erc20AuctionAddressesIntf = erc20AuctionAddresses;
-        // console.log("nftAuctionAddresses[connection.chainId!]", nftAuctionAddressesIntf[chainId]["NFTAuction"][0])
 
-        nftAuctionAddress =
-        chainId in nftAuctionAddressesIntf ? nftAuctionAddressesIntf[chainId]["NFTAuction"][0] : null;
-        nftFractionalizerAddress =
-        chainId in nftFractionalizerAddressesIntf ? nftFractionalizerAddressesIntf[chainId]["NFTFractionalizer"][0] : null;
-        erc20AuctionAddress =
-        chainId in erc20AuctionAddressesIntf ? erc20AuctionAddressesIntf[chainId]["ERC20Auction"][0] : null;
-        nftAuctionContract = new Contract(nftAuctionAddress!, nftAuctionAbi, connection!.signer);
-        nftFractionalizerContract = new Contract(nftFractionalizerAddress!, nftFractionalizerAbi, connection!.signer);
-        erc20AuctionContract = new Contract(erc20AuctionAddress!, erc20AuctionAbi, connection!.signer);
-
-        // --------------------------------------------------------------------------------------------------------------------
         fetchData();
     };
 
@@ -249,7 +252,7 @@ const Marketplace: React.FC = () => {
         const nftIPContract = new Contract(ipAddress, intellectualPropertyAbi, connection!.signer);
         try {  
             // approve 
-            const approveTx = await nftIPContract.approve(nftFractionalizerAddress, Number(ipId))
+            const approveTx = await nftIPContract.approve(nftFractionalizerAddress!, Number(ipId))
             await approveTx.wait()
             // fractionalize
             const fractionalizeTx = await nftFractionalizerContract.fractionalize(ipAddress, Number(ipId))
@@ -259,7 +262,7 @@ const Marketplace: React.FC = () => {
             const totalSupply = await erc20NftContract.balanceOf(connection!.address)
             console.log(`Fractionalized IP to ${totalSupply} ERC20 tokens `)
             // Show success feedback
-            alert('Transaction successful!');
+            alert(`IP/NFT fractionalized to ERC20 tokens. ERC20 Address: ${erc20FractionAddress}, Total Supply: ${totalSupply}`);
         } catch (err) {
             console.log("fractionalization error", err)
             // Show failure feedback
@@ -276,15 +279,17 @@ const Marketplace: React.FC = () => {
         const erc20NftContract = new Contract(erc20NftAddress, erc20NFTFractionsAbi, connection!.signer);
         const totalSupply = await erc20NftContract.totalSupply()
         console.log(` ERC20: ${erc20NftAddress}, totalSupply: ${totalSupply}`);
+        const ipAddress = await nftFractionalizerContract.getFractionalizedNFTAddressOf(erc20NftAddress, Number(ipId))
         try {  
             // restore the NFT
             const approveTx = await erc20NftContract.approve(nftFractionalizerAddress!, parseEther(totalSupply.toString()))
             await approveTx.wait()
             const restoreTx = await nftFractionalizerContract.restoreNFTWithERC20Address(erc20NftAddress, Number(ipId))
             await restoreTx.wait()
+
             console.log(`ERC721 NFT with tokenId ${ipId} has been restored`)
             // Show success feedback
-            alert('Transaction successful!');
+            alert(`IP/ NFT with address ${ipAddress} and tokenId ${ipId} has been restored!`);
         } catch (err) {
             console.log("transaction error", err)
             // Show failure feedback
