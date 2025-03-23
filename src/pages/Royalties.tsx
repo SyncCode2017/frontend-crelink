@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
+import { contractAddressesInterface } from '../types';
+import { nftFractionalizerAbi, nftFractionalizerAddresses} from '../../constants/'
+import WalletService from '../services/wallet';
+import { Contract, parseEther } from 'ethers';
 
 const Royalties: React.FC = () => {
     const [ipAddress, setIpAddress] = useState('');
@@ -8,6 +12,15 @@ const Royalties: React.FC = () => {
     const [royaltyAmount, setRoyaltyAmount] = useState(0);
     const [recentRoyalties, setRecentRoyalties] = useState<{ ipId: string; amount: number; timestamp: Date }[]>([]);
     const [error, setError] = useState<string | null>(null);
+    let nftFractionalizerAddressesIntf: contractAddressesInterface, chainId,
+        nftFractionalizerAddress: string | null, nftFractionalizerContract: Contract
+    let connection; //= WalletService.connection;
+    connection = WalletService.connection;
+    connection && connection.chainId ? chainId = connection.chainId.toString() : chainId = "31337"
+    console.log("chainId", chainId);
+
+    nftFractionalizerAddressesIntf = nftFractionalizerAddresses;
+    nftFractionalizerAddress = chainId! in nftFractionalizerAddressesIntf ? nftFractionalizerAddressesIntf[chainId!]["NFTFractionalizer"][0] : null
 
     useEffect(() => {
         // Mock recent royalties data
@@ -16,32 +29,78 @@ const Royalties: React.FC = () => {
             { ipId: 'IP002', amount: 1.0, timestamp: new Date() },
         ];
         setRecentRoyalties(mockRoyalties);
-    }, []);
+        checkWalletConnection()
+    }, [connection]);
 
-    const handleSendRoyalties = async () => {
+    const checkWalletConnection = () => {
+        connection = WalletService.connection;
+        connection && connection.chainId ? chainId = connection.chainId.toString() : chainId = "31337"
+        if (!connection) {
+            alert('Please connect your wallet!');
+            // navigate('/'); // Redirect to Landing page
+            return;
+        }
+        if (chainId !== "84532") {
+            alert('Please switch the network in your wallet to Base Sepolia and refresh the page!');
+            // navigate('/'); // Redirect to Landing page
+            return;
+        }
+    };
+
+
+    const handleSendRoyalties = async (ipAddress: string, ipId: string, royaltyAmount: number) => {
+        nftFractionalizerContract = new Contract(nftFractionalizerAddress!, nftFractionalizerAbi, connection!.signer);
         if (!ipAddress || !ipId || royaltyAmount <= 0) {
             setError('Please enter valid IP address, ID, and amount.');
             return;
         }
         // TODO: Implement the logic to send royalties to the IP owner
-        console.log(`Sending ${royaltyAmount} ETH to ${ipAddress} for IP ID ${ipId}`);
-        setError(null);
-        // Reset fields after sending
-        setIpAddress('');
-        setIpId('');
-        setRoyaltyAmount(0);
+        console.log(`Sending ${royaltyAmount} ETH to owner of ${ipAddress} for IP ID ${ipId}`);
+        console.log("nftFractionalizerAddress",nftFractionalizerAddress! )
+        console.log("connection!.signer",connection!.address )
+
+
+        try {
+            const depositTx = await nftFractionalizerContract.depositRoyalty(ipAddress, ipId, {value: parseEther(royaltyAmount.toString())})
+            await depositTx.wait()        
+            // Show success feedback
+            alert('Transaction successful!');
+        } catch (err) {
+            console.log('transaction failed with ', err)
+            // Show failure feedback
+            alert('Transaction failed, please try again!');
+        } finally {
+            setError(null);
+            // Reset fields after sending
+            setIpAddress('');
+            setIpId('');
+            setRoyaltyAmount(0);
+        }
+
     };
 
-    const handleClaimRoyalties = async () => {
-        if (!fractionTokenAddress) {
-            setError('Please enter a valid IP fraction token address.');
+    const handleClaimRoyalties = async (erc20NftAddress: string) => {
+        if (!erc20NftAddress) {
+            setError('Please enter a valid IP erc20 IP/NFT token address.');
             return;
         }
         // TODO: Implement the logic to claim royalties for the fractionalized IP
-        console.log(`Claiming royalties for token address ${fractionTokenAddress}`);
-        setError(null);
-        // Reset field after claiming
-        setFractionTokenAddress('');
+        console.log(`Claiming royalties for token address ${erc20NftAddress}`);
+        nftFractionalizerContract = new Contract(nftFractionalizerAddress!, nftFractionalizerAbi, connection!.signer);
+        try {
+            const claimTx = await nftFractionalizerContract.withdrawRoyalty(erc20NftAddress)
+            await claimTx.wait()        
+            // Show success feedback
+            alert('Transaction successful!');
+        } catch (err) {
+            // Show failure feedback
+            alert('Transaction failed, please try again!');
+        } finally {
+            setError(null);
+            // Reset field after claiming
+            setFractionTokenAddress('');
+        }
+
     };
 
     return (
@@ -76,7 +135,7 @@ const Royalties: React.FC = () => {
                             className="w-full bg-gray-700 rounded-lg p-2 mb-4"
                         />
                         <button
-                            onClick={handleSendRoyalties}
+                            onClick={() => handleSendRoyalties(ipAddress, ipId, royaltyAmount)}
                             className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg w-full"
                         >
                             Send Royalties
@@ -88,13 +147,13 @@ const Royalties: React.FC = () => {
                         <h2 className="text-2xl font-semibold mb-4">Claim Royalties</h2>
                         <input
                             type="text"
-                            placeholder="Fraction Token Address"
+                            placeholder="ERC20 Fraction of IP/NFT Address"
                             value={fractionTokenAddress}
                             onChange={(e) => setFractionTokenAddress(e.target.value)}
                             className="w-full bg-gray-700 rounded-lg p-2 mb-4"
                         />
                         <button
-                            onClick={handleClaimRoyalties}
+                            onClick={() => handleClaimRoyalties(fractionTokenAddress)}
                             className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg w-full"
                         >
                             Claim Royalties

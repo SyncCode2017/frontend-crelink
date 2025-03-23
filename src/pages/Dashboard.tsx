@@ -12,14 +12,14 @@ const Dashboard: React.FC = () => {
     const [isLoading, setIsLoading] = useState(true);
     let chainId: string
     const navigate = useNavigate();
-
+    const connection = WalletService.connection;
     useEffect(() => {
         checkWalletConnection();
-    }, []);
+    }, [connection]);
 
     const checkWalletConnection = async () => {
         setIsLoading(true);
-        const connection = WalletService.connection;
+
 
         if (!connection) {
             alert('Please connect your wallet to access the Dashboard.');

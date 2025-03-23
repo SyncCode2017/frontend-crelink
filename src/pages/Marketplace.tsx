@@ -101,7 +101,7 @@ const Marketplace: React.FC = () => {
                         const parentIPs = await nftIPContract.getParentIPs(auctionIPData.tokenId)
                         // const currentBidder = auctionIPData.
                         // console.log('categorySymbol:', categorySymbol.toUpperCase())
-                        // TODO: include tittle in the intellectual property
+                        // TODO: include title in the intellectual property
                         mockAuctions.push({
                             listingId: auctionIPData.id,
                             tokenId: auctionIPData.tokenId,
@@ -242,8 +242,6 @@ const Marketplace: React.FC = () => {
         } finally {
             setIsListNewIPModalOpen(false); // Close the modal after listing
         }
-    
-        
     };
 
     const handleFractionalizeIP = async (ipAddress: string, ipId: string) => {
