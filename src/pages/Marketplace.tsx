@@ -134,7 +134,7 @@ const Marketplace: React.FC = () => {
             const mockApprovalTokens: IPItem[] = [
                 {
                     tokenId: 'IP008',
-                    title: 'Usage Approval',
+                    title: 'Licence token',
                     category: 'MUSIC',
                     imageUrl: 'https://picsum.photos/400/300?random=6',
                     isFractionalized: false,
@@ -148,7 +148,7 @@ const Marketplace: React.FC = () => {
                 },
                 {
                     tokenId: 'IP009',
-                    title: 'Usage Approval',
+                    title: 'Licence token',
                     category: 'MUSIC',
                     imageUrl: 'https://picsum.photos/400/300?random=7',
                     isFractionalized: false,
@@ -346,7 +346,7 @@ const Marketplace: React.FC = () => {
                             onClick={() => setView('approvalTokens')}
                             className={`px-4 py-2 rounded-full ${view === 'approvalTokens' ? 'bg-purple-600 text-white' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}`}
                         >
-                            Approval Tokens
+                            IP Licenses
                         </button>
                     </div>
 
