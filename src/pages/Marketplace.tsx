@@ -230,11 +230,13 @@ const Marketplace: React.FC = () => {
         startingPrice ? startingPrice : startingPrice = 0
         durationInDays ? durationInDays : durationInDays = 0
         const startingPriceWei = parseEther(startingPrice.toString())
-        const durationInSec = 24 * 60 * 60 * durationInDays
+        const durationInSec = BigInt(24 * 60 * 60 * durationInDays)
         console.log(`Listing new IP/NFT: ${ipAddress}, ID: ${ipId}, Starting Price: ${startingPriceWei} WEI, Duration: ${durationInSec} sec`);
         try {  
             // approve 
             const nftIPContract = new Contract(ipAddress, intellectualPropertyAbi, connection!.signer);
+            const ipOwner = await nftIPContract.ownerOf(Number(ipId))
+            console.log(`Current owner: ${ipOwner}`)
             const approveTx = await nftIPContract.approve(nftAuctionAddress!, Number(ipId))
             await approveTx.wait()
             // Listing
