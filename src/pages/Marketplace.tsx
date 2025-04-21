@@ -70,7 +70,7 @@ const Marketplace: React.FC = () => {
         }
         chainId = connection!.chainId ? connection!.chainId.toString() : "31337"
         console.log("chainId", chainId);
-        if (chainId !== "84532") {
+        if (chainId !== "84532" && chainId !== "31337") {
             alert('Please switch the network in your wallet to Base Sepolia and refresh the page!');
             navigate('/'); // Redirect to Landing page
             return;
@@ -226,18 +226,25 @@ const Marketplace: React.FC = () => {
     };
 
     const handleListNewIP = async(ipAddress: string, ipId: string, startingPrice: number | undefined, durationInDays: number | undefined) => {
-        console.log(`Listing new IP/NFT: ${ipAddress}, ID: ${ipId}, Starting Price: ${startingPrice} ETH`);
+        
         startingPrice ? startingPrice : startingPrice = 0
         durationInDays ? durationInDays : durationInDays = 0
         const startingPriceWei = parseEther(startingPrice.toString())
         const durationInSec = 24 * 60 * 60 * durationInDays
+        console.log(`Listing new IP/NFT: ${ipAddress}, ID: ${ipId}, Starting Price: ${startingPriceWei} WEI, Duration: ${durationInSec} sec`);
         try {  
+            // approve 
+            const nftIPContract = new Contract(ipAddress, intellectualPropertyAbi, connection!.signer);
+            const approveTx = await nftIPContract.approve(nftAuctionAddress!, Number(ipId))
+            await approveTx.wait()
+            // Listing
             const listingFee = (await nftAuctionContract.listingFee()).toString()
             console.log("listingFee", listingFee)
             const tx = await nftAuctionContract.listNFTForAuction(startingPriceWei, ipAddress, Number(ipId), durationInSec, {value: BigInt(listingFee)});
-             await tx.wait();
-                console.log("New IP listed for auction!")
-                // Show success feedback
+            await tx.wait();
+            console.log("New IP listed for auction!")
+            // Show success feedback
+            alert(`Your IP/NFT has been placed on auction successfully!`);
         } catch (err) {
             console.log("listing error", err)
             // Show failure feedback

@@ -28,7 +28,7 @@ const Dashboard: React.FC = () => {
         }
         chainId = connection!.chainId ? connection!.chainId.toString() : "31337"
         console.log("chainId", chainId);
-        if (chainId !== "84532") {
+        if (chainId !== "84532" && chainId !== "31337") {
             alert('Please switch the network in your wallet to Base Sepolia and refresh the page!');
             navigate('/'); // Redirect to Landing page
             return;
